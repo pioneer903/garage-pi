@@ -9,14 +9,23 @@ class GarageContainer extends Component {
     super(props);
 
     this.state = { garageState: '' };
+    this.state2 = { garageState2: '' };
 
     this.updateStatus = this.updateStatus.bind(this);
     this.sendRelay = this.sendRelay.bind(this);
     this.getGarageStatus = this.getGarageStatus.bind(this);
+
+    this.updateStatus2 = this.updateStatus2.bind(this);
+    this.sendRelay2 = this.sendRelay2.bind(this);
+    this.getGarageStatus2 = this.getGarageStatus2.bind(this);
   }
 
   componentDidMount() {
     this.updateStatus();
+  }
+
+  componentDidMount2() {
+    this.updateStatus2();
   }
 
   updateStatus() {
@@ -29,8 +38,27 @@ class GarageContainer extends Component {
       })
   }
 
+  updateStatus2() {
+    axios.get('/status2')
+      .then(res => {
+        this.setState2({ garageState2: res.data });
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
+
   sendRelay() {
     axios.get('/relay')
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
+  sendRelay2() {
+    axios.get('/relay2')
       .then(res => {
         console.log(res);
       })
@@ -55,8 +83,26 @@ class GarageContainer extends Component {
     }
   }
 
+
+  getGarageStatus2() {
+    let { garageState2 } = this.state2;
+
+    if (!garageState2) {
+      return '';
+    }
+
+    if (garageState2.open) {
+      return 'Open';
+    } else if (garageState2.close) {
+      return 'Closed';
+    } else {
+      return 'Partially open';
+    }
+  }
+
   render() {
     let { garageState } = this.state;
+    let { garageState2 } = this.state2;
 
     return (
       <div>
@@ -64,6 +110,12 @@ class GarageContainer extends Component {
         <GarageButton
           buttonText={garageState.open ? 'Close' : 'Open'}
           sendRelay={this.sendRelay} />
+      </div>
+      <div>
+        <GarageState2 getGarageStatus2={this.getGarageStatus2} />
+        <GarageButton2
+          buttonText2={garageState2.open ? 'Close' : 'Open'}
+          sendRelay2={this.sendRelay2} />
       </div>
     )
   }
